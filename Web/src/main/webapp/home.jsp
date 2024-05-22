@@ -8,7 +8,8 @@
 </head>
 <body>
 	<h1>Home Page</h1>
-	<h2> Hi from ${name} of batch ${batch} </h2>
+	<p> Result of ${a} ${opr} ${b} is:  <b>${result} </b> </p>
+	
 
 </body>
 </html>
