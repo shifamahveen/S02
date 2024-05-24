@@ -1,5 +1,7 @@
 package com.example.Calculator;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class CalculatorController {
+	@Autowired
+	private JdbcTemplate template;
 
 	@RequestMapping("/")
 	public String index() {
@@ -38,6 +42,9 @@ public class CalculatorController {
 				result = 1 / (Math.tan(Math.toRadians(angle)));
 				break;
 		}
+		
+		String sql = "insert into trig (angle, func, result) values (?,?,?)";
+		template.update(sql, angle, func, result);
 		
 		model.addAttribute("angle", angle);
 		model.addAttribute("func", func);
