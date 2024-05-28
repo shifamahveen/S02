@@ -9,12 +9,8 @@
 </head>
 <body>
 
-	<section class="border border-secondary p-4 w-50 mx-auto my-5 shadow rounded text-center">
-		<p> The trigonometric value of ${func}(${angle}) is: <b>${result}</b> </p>
+	<p> The trigonometric value of ${func}(${angle}) is: <b>${result}</b> </p>
 	
-		<a href="/" class="btn btn-success">Back to Home</a>
-		<a href="/records" class="btn btn-warning">View Logs</a>
-	
-	</section>
+	<a href="/" class="btn btn-success">Back to Home</a>
 </body>
 </html>

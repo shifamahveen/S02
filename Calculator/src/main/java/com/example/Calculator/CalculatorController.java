@@ -1,5 +1,7 @@
 package com.example.Calculator;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -51,4 +53,23 @@ public class CalculatorController {
 		model.addAttribute("result", result);
 		return "result.jsp";
 	}
+	
+	@RequestMapping("records")
+	public String records(Model model) {
+		String sql = "select * from trig";
+		
+		List<Calculator> records = template.query(
+				sql, 
+				(rs, rowNum) -> new Calculator(
+						rs.getInt("id"),
+						rs.getInt("angle"),
+						rs.getString("func"),
+						rs.getDouble("result")
+				)				
+		);
+		
+		model.addAttribute("records", records);
+		return "records.jsp";
+	}
+		
 }

@@ -27,11 +27,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.example</groupId>
-			<artifactId>DI</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper -->
 		<dependency>
@@ -53,7 +48,22 @@
 		    <artifactId>spring-boot-starter-jdbc</artifactId>
 		    <version>3.2.4</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api -->
+		<!-- jakarta jstl -->
+		<dependency>
+		    <groupId>jakarta.servlet.jsp.jstl</groupId>
+		    <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+		    <version>3.0.0</version>
+		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/glassfish-jstl -->
+		<!-- glassfish jstl -->
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>glassfish-jstl</artifactId>
+		    <version>11.0.18</version>
+		</dependency>
 
 	</dependencies>
 

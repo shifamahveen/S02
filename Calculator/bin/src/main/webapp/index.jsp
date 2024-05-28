@@ -14,7 +14,7 @@
 		<form action="calculate" method="POST">
 			<div class="mb-3">
 			    <label class="form-label">Angle</label>
-			    <input type="text" class="form-control" name="angle" required>
+			    <input type="text" class="form-control" name="angle">
 			</div>
 			<div class="mb-3">
 			    <select class="form-control" name="func">
