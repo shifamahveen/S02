@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -71,5 +73,44 @@ public class CalculatorController {
 		model.addAttribute("records", records);
 		return "records.jsp";
 	}
+	
+	@RequestMapping("delete/{id}")
+	public String delete(@PathVariable int id) {
+		String sql = "DELETE from trig where id = ?";
+		int status =  template.update(sql, id);
 		
+		if(status>0) {
+			return "redirect:/records";
+		}
+		else {
+			return "error.jsp";
+		}
+	}
+	
+	@RequestMapping("edit")
+	public String edit(int id, Model model) {
+		@SuppressWarnings("deprecation")
+		Calculator record = template.queryForObject("select * from trig where id = ?", 
+				new Object[]{id},
+				(rs, rowNum) -> new Calculator(
+						rs.getInt("id"),
+						rs.getInt("angle"),
+						rs.getString("func"),
+						rs.getDouble("result")
+				)
+		);
+		
+		model.addAttribute("obj",record);
+		
+		return "edit.jsp";
+	}
+	
+	@RequestMapping("update")
+	public String update(@ModelAttribute Calculator calc) {
+		String sql = "UPDATE trig set angle = ?, func = ?, result = ? where id = ?";
+		template.update(sql, calc.getAngle(), calc.getFunc(), calc.getResult(), calc.getId());
+		
+		return "redirect:/records";
+	}
+	
 }

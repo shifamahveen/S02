@@ -23,6 +23,8 @@
 				<th>Angle</th>
 				<th>Function</th>
 				<th>Result</th>
+				<th>Delete</th>
+				<th>Edit</th>
 			</tr>
 			
 			<c:forEach items="${records}" var="record">
@@ -31,6 +33,12 @@
 					<td>${record.angle}</td>
 					<td>${record.func}</td>
 					<td>${record.result}</td>
+					<td>
+						<a href="delete/${record.id}" class="btn btn-danger">Delete</a>
+					</td>
+					<td>
+						<a href="/edit?id=${record.id}" class="btn btn-info">Edit</a>
+					</td>
 				</tr>		
 			</c:forEach>
 			
