@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -16,12 +19,12 @@ public class CalculatorController {
 	@Autowired
 	private JdbcTemplate template;
 
-	@RequestMapping("/")
+	@GetMapping("/")
 	public String index() {
 		return "index.jsp";
 	}
 	
-	@RequestMapping("/calculate")
+	@PostMapping("/calculate")
 	public String calculate(Model model, @RequestParam("angle") int angle, @RequestParam("func") String func) {
 		
 		double result = 0.0;
@@ -56,7 +59,7 @@ public class CalculatorController {
 		return "result.jsp";
 	}
 	
-	@RequestMapping("records")
+	@GetMapping("records")
 	public String records(Model model) {
 		String sql = "select * from trig";
 		
@@ -74,7 +77,7 @@ public class CalculatorController {
 		return "records.jsp";
 	}
 	
-	@RequestMapping("delete/{id}")
+	@PostMapping("delete/{id}")
 	public String delete(@PathVariable int id) {
 		String sql = "DELETE from trig where id = ?";
 		int status =  template.update(sql, id);
@@ -87,7 +90,7 @@ public class CalculatorController {
 		}
 	}
 	
-	@RequestMapping("edit")
+	@GetMapping("edit")
 	public String edit(int id, Model model) {
 		@SuppressWarnings("deprecation")
 		Calculator record = template.queryForObject("select * from trig where id = ?", 
@@ -105,7 +108,7 @@ public class CalculatorController {
 		return "edit.jsp";
 	}
 	
-	@RequestMapping("update")
+	@PostMapping("update")
 	public String update(@ModelAttribute Calculator calc) {
 		String sql = "UPDATE trig set angle = ?, func = ?, result = ? where id = ?";
 		template.update(sql, calc.getAngle(), calc.getFunc(), calc.getResult(), calc.getId());
@@ -113,4 +116,44 @@ public class CalculatorController {
 		return "redirect:/records";
 	}
 	
+	@GetMapping("sort")
+	public String sort(Model model, @RequestParam("sortBy") String sortValue) {
+		String sql;
+		
+		if(sortValue.equals("asc")) {
+			sql = "select * from trig order by angle";
+		} else {
+			sql = "select * from trig order by angle desc";
+		}
+		
+		List<Calculator> records = template.query(
+				sql, 
+				(rs, rowNum) -> new Calculator(
+						rs.getInt("id"),
+						rs.getInt("angle"),
+						rs.getString("func"),
+						rs.getDouble("result")
+				)				
+		);
+		
+		model.addAttribute("records", records);
+		return "records.jsp";	
+	}
+	
+	@GetMapping("search")
+	public String search(Model model, @RequestParam("searchValue") String value) {
+		@SuppressWarnings("deprecation")
+		List<Calculator> records = template.query(
+				"select * from trig where func like ?", 
+				new String[] {"%" + value + "%"},
+				(rs, rowNum) -> new Calculator(
+						rs.getInt("id"),
+						rs.getInt("angle"),
+						rs.getString("func"),
+						rs.getDouble("result")
+				)				
+		);
+		model.addAttribute("records", records);
+		return "records.jsp";
+	}
 }

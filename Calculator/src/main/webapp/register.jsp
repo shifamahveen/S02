@@ -9,27 +9,25 @@
 </head>
 <body>
 	<section class="border border-secondary p-4 w-50 mx-auto my-5 shadow rounded" >
-		<h1>Trigonometry Calculator</h1>
+		<h1>Create Account</h1>
 		
-		<form action="update" method="POST">
-			<input type="hidden" name="_method" value="PUT" />
-			<input type="hidden" class="form-control" name="id" value="${obj.id}" >
-		
+		<form action="register" method="POST">
 			<div class="mb-3">
-			    <label class="form-label">Angle</label>
-			    <input type="text" class="form-control" name="angle" value="${obj.angle}" >
-			</div>
-			<div class="mb-3">
-			    <label class="form-label">Function</label>
-			    <input type="text" class="form-control" name="func" value="${obj.func}" >
-			</div>
-			<div class="mb-3">
-			    <label class="form-label">Result</label>
-			    <input type="text" class="form-control" name="result" value="${obj.result}" >
+			    <label class="form-label">Name</label>
+			    <input type="text" class="form-control" name="name" required>
 			</div>
 			
-			<button type="submit" class="btn btn-primary">Update</button>
+			<div class="mb-3">
+			    <label class="form-label">Email</label>
+			    <input type="email" class="form-control" name="email" required>
+			</div>
 			
+			<div class="mb-3">
+			    <label class="form-label">Password</label>
+			    <input type="password" class="form-control" name="password" required>
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Register</button>
 		</form>
 	</section>
 	

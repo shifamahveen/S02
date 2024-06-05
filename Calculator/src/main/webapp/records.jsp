@@ -10,39 +10,72 @@
 </head>
 <body>
 
-	<section class="border border-secondary p-4 w-50 mx-auto my-5 shadow rounded">
+	<section class="border border-secondary p-4 mx-auto my-5 shadow rounded" style="width: 60vw;">
 	
 		<div class="d-flex justify-content-between">
 			<h2> Trigonometry Records </h2>
 			<a href="/" class="btn btn-success py-auto">Create Record </a>
 		</div>		
 		
-		<table class="table my-2">
-			<tr>
-				<th>ID</th>
-				<th>Angle</th>
-				<th>Function</th>
-				<th>Result</th>
-				<th>Delete</th>
-				<th>Edit</th>
-			</tr>
-			
-			<c:forEach items="${records}" var="record">
+		<section class="d-flex justify-content-between">
+			<table class="table my-2 mt-4" style="width: 40vw">
 				<tr>
-					<td>${record.id}</td>
-					<td>${record.angle}</td>
-					<td>${record.func}</td>
-					<td>${record.result}</td>
-					<td>
-						<a href="delete/${record.id}" class="btn btn-danger">Delete</a>
-					</td>
-					<td>
-						<a href="/edit?id=${record.id}" class="btn btn-info">Edit</a>
-					</td>
-				</tr>		
-			</c:forEach>
+					<th>ID</th>
+					<th>Angle</th>
+					<th>Function</th>
+					<th>Result</th>
+					<th>Delete</th>
+					<th>Edit</th>
+				</tr>
+				
+				<c:forEach items="${records}" var="record">
+					<tr>
+						<td>${record.id}</td>
+						<td>${record.angle}</td>
+						<td>${record.func}</td>
+						<td>${record.result}</td>
+						<td>
+							<form action="delete/${record.id}" method="POST">
+								<input type="hidden" name="_method" value="DELETE" />
+								<button type="submit" class="btn btn-danger">Delete</button>
+							</form>
+						</td>
+						<td>
+							<a href="/edit?id=${record.id}" class="btn btn-info">Edit</a>
+						</td>
+					</tr>		
+				</c:forEach>
+				
+			</table>
 			
-		</table>
+			<div class="mt-5 ms-4">
+				<h4>Tools </h4>
+				
+				<form action="sort" method="get">
+					<label class="form-label">Sort</label>
+					<div  class="d-flex">
+						<select name="sortBy" class="form-select rounded-0 rounded-start">
+							<option value="asc">Ascending</option>
+							<option value="desc">Descending</option>
+						</select>
+						<button type="submit" class="btn btn-primary rounded-0 rounded-end">Sort</button>
+					</div>
+				</form>
+				
+				<form action="search" method="get">
+					<label class="form-label"> Search</label>
+					
+					<div class="d-flex">
+						<input type="text" name="searchValue" placeholder="Search here..." class="form-control rounded-0 rounded-start" />
+						<button type="submit" class="btn btn-primary rounded-0 rounded-end">Search</button>
+					</div>
+				</form>
+				
+			</div>
+		</section>
+		
+		
+		
 	</section>
 	
 	
