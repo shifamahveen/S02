@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.example.Calculator.UserController;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CalculatorController {
@@ -20,8 +24,12 @@ public class CalculatorController {
 	private JdbcTemplate template;
 
 	@GetMapping("/")
-	public String index() {
-		return "index.jsp";
+	public String index(HttpServletRequest req) {
+		if(isLoggedIn(req)) {
+			return "index.jsp";
+		} else {
+			return "login.jsp";
+		}
 	}
 	
 	@PostMapping("/calculate")
@@ -60,21 +68,26 @@ public class CalculatorController {
 	}
 	
 	@GetMapping("records")
-	public String records(Model model) {
-		String sql = "select * from trig";
+	public String records(Model model, HttpServletRequest req) {
+		if(isLoggedIn(req)) {
+			String sql = "select * from trig";
+			
+			List<Calculator> records = template.query(
+					sql, 
+					(rs, rowNum) -> new Calculator(
+							rs.getInt("id"),
+							rs.getInt("angle"),
+							rs.getString("func"),
+							rs.getDouble("result")
+					)				
+			);
+			
+			model.addAttribute("records", records);
+			return "records.jsp";
+		} else {
+			return "login.jsp";
+		}
 		
-		List<Calculator> records = template.query(
-				sql, 
-				(rs, rowNum) -> new Calculator(
-						rs.getInt("id"),
-						rs.getInt("angle"),
-						rs.getString("func"),
-						rs.getDouble("result")
-				)				
-		);
-		
-		model.addAttribute("records", records);
-		return "records.jsp";
 	}
 	
 	@PostMapping("delete/{id}")
@@ -156,4 +169,50 @@ public class CalculatorController {
 		model.addAttribute("records", records);
 		return "records.jsp";
 	}
+	
+	@GetMapping("login")
+	public String showLoginForm() { 
+		return "login.jsp";
+	}
+	
+	@PostMapping("login")
+	public String login(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletRequest req) {
+//		check if user is registered or nor 
+		if(isValidUser(email, password)) {
+			req.getSession().setAttribute("email", email);
+			return "redirect:/records";
+		} else {
+			return "register.jsp";
+		}
+	}
+
+	private boolean isValidUser(String email, String password) {
+		String sql = "select count(*) from users where email = ? and password = ?";
+		int count = template.queryForObject(sql, Integer.class, email, password);
+		
+		return count > 0;
+	}
+	
+	private boolean isLoggedIn(HttpServletRequest req) {
+		String status = (String) req.getSession().getAttribute("email");
+		
+		return status != null;
+	}
+	
+	@GetMapping("logout")
+	public String logout(HttpServletRequest req) {
+		HttpSession session = req.getSession(false);
+		String status = (String) session.getAttribute("email");
+		
+		if(status != null) {
+			session.invalidate();
+			return "login.jsp";
+		} else {
+			return "error.jsp";
+		}
+		
+	}
+	
+	
+	
 }

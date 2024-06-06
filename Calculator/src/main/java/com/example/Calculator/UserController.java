@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class UserController {
 	
@@ -38,7 +40,7 @@ public class UserController {
 				return "Registeration failed!";
 			}
 		}
-		
-		
 	}
+	
+	
 }
