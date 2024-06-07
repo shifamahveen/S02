@@ -29,6 +29,9 @@
 			
 			<button type="submit" class="btn btn-primary">Register</button>
 		</form>
+		
+		<p class="text-secondary py-2"> Already have an account? <a href="login" >Login Now!</a> </p>
+		
 	</section>
 	
 

@@ -31,6 +31,7 @@
 	  </div>
 	</nav>
 
+	<h2 class="text-center">Hello ${name}!</h2>
 	<section class="border border-secondary p-4 mx-auto my-5 shadow rounded" style="width: 60vw;">
 	
 		<div class="d-flex justify-content-between">

@@ -2,6 +2,7 @@ package com.example.Calculator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ public class UserController {
 	
 	@GetMapping("register")
 	public String showRegisterForm() { 
-		return "register.jsp";
+		return "register";
 	}
 	
 	@PostMapping("register")
@@ -28,10 +29,15 @@ public class UserController {
 		
 		if(isUserRegistered > 0) {
 			model.addAttribute("error", "User already registered");
-			return "error.jsp";	
+			return "error";	
 		} else {
+			
+//			encrypt password
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			String encodedPassword = encoder.encode(password);
+			
 			String sql = "insert into users (name, email, password) values (?,?,?)";
-			int status = template.update(sql, name, email, password);
+			int status = template.update(sql, name, email, encodedPassword);
 			
 			if (status > 0) {
 				return "redirect:/records";

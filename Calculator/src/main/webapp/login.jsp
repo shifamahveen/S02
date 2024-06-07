@@ -25,6 +25,8 @@
 			
 			<button type="submit" class="btn btn-primary">Login</button>
 		</form>
+		
+		<p class="text-secondary py-2"> Dont have an account? <a href="register" >Register Now!</a> </p>
 	</section>
 	
 

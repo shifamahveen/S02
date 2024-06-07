@@ -3,7 +3,9 @@ package com.example.Calculator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,9 +28,9 @@ public class CalculatorController {
 	@GetMapping("/")
 	public String index(HttpServletRequest req) {
 		if(isLoggedIn(req)) {
-			return "index.jsp";
+			return "index";
 		} else {
-			return "login.jsp";
+			return "login";
 		}
 	}
 	
@@ -64,12 +66,18 @@ public class CalculatorController {
 		model.addAttribute("angle", angle);
 		model.addAttribute("func", func);
 		model.addAttribute("result", result);
-		return "result.jsp";
+		return "result";
 	}
 	
 	@GetMapping("records")
 	public String records(Model model, HttpServletRequest req) {
 		if(isLoggedIn(req)) {
+//			get the logged in user name
+			String email = (String) req.getSession().getAttribute("email");
+			String getName = "select name from users where email = ?";
+			String name = template.queryForObject(getName, new Object[] {email}, String.class);
+
+//			find records
 			String sql = "select * from trig";
 			
 			List<Calculator> records = template.query(
@@ -83,9 +91,11 @@ public class CalculatorController {
 			);
 			
 			model.addAttribute("records", records);
-			return "records.jsp";
+			model.addAttribute("name", name);
+
+			return "records";
 		} else {
-			return "login.jsp";
+			return "login";
 		}
 		
 	}
@@ -99,7 +109,7 @@ public class CalculatorController {
 			return "redirect:/records";
 		}
 		else {
-			return "error.jsp";
+			return "error";
 		}
 	}
 	
@@ -118,7 +128,7 @@ public class CalculatorController {
 		
 		model.addAttribute("obj",record);
 		
-		return "edit.jsp";
+		return "edit";
 	}
 	
 	@PostMapping("update")
@@ -130,7 +140,12 @@ public class CalculatorController {
 	}
 	
 	@GetMapping("sort")
-	public String sort(Model model, @RequestParam("sortBy") String sortValue) {
+	public String sort(Model model, @RequestParam("sortBy") String sortValue, HttpServletRequest req) {
+//		get the logged in user name
+		String email = (String) req.getSession().getAttribute("email");
+		String getName = "select name from users where email = ?";
+		String name = template.queryForObject(getName, new Object[] {email}, String.class);
+		
 		String sql;
 		
 		if(sortValue.equals("asc")) {
@@ -150,11 +165,17 @@ public class CalculatorController {
 		);
 		
 		model.addAttribute("records", records);
-		return "records.jsp";	
+		model.addAttribute("name", name);
+		return "records";	
 	}
 	
 	@GetMapping("search")
-	public String search(Model model, @RequestParam("searchValue") String value) {
+	public String search(Model model, @RequestParam("searchValue") String value, HttpServletRequest req) {
+//		get the logged in user name
+		String email = (String) req.getSession().getAttribute("email");
+		String getName = "select name from users where email = ?";
+		String name = template.queryForObject(getName, new Object[] {email}, String.class);
+
 		@SuppressWarnings("deprecation")
 		List<Calculator> records = template.query(
 				"select * from trig where func like ?", 
@@ -167,30 +188,44 @@ public class CalculatorController {
 				)				
 		);
 		model.addAttribute("records", records);
-		return "records.jsp";
+		model.addAttribute("name", name);
+
+		return "records";
 	}
 	
 	@GetMapping("login")
 	public String showLoginForm() { 
-		return "login.jsp";
+		return "login";
 	}
 	
 	@PostMapping("login")
-	public String login(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletRequest req) {
-//		check if user is registered or nor 
+	public String login(Model model, @RequestParam("email") String email, @RequestParam("password") String password, HttpServletRequest req) {
+		// check if user is registered or nor 
 		if(isValidUser(email, password)) {
 			req.getSession().setAttribute("email", email);
+			String sql = "select name from users where email = ?";
+			String name = template.queryForObject(sql, new Object[] {email}, String.class);
+
+			model.addAttribute("name", name);
 			return "redirect:/records";
 		} else {
-			return "register.jsp";
+			return "register";
 		}
 	}
 
 	private boolean isValidUser(String email, String password) {
-		String sql = "select count(*) from users where email = ? and password = ?";
-		int count = template.queryForObject(sql, Integer.class, email, password);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		
-		return count > 0;
+		try {
+			String sql = "select password from users where email = ?";
+			@SuppressWarnings("deprecation")
+			String storedPassword = template.queryForObject(sql, new Object[] {email}, String.class);
+			
+			return encoder.matches(password, storedPassword);
+		}
+		catch (EmptyResultDataAccessException e) {
+			return false;
+		}
 	}
 	
 	private boolean isLoggedIn(HttpServletRequest req) {
@@ -206,9 +241,9 @@ public class CalculatorController {
 		
 		if(status != null) {
 			session.invalidate();
-			return "login.jsp";
+			return "login";
 		} else {
-			return "error.jsp";
+			return "error";
 		}
 		
 	}
